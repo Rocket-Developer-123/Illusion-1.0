@@ -1,24 +1,582 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Title Here</title>
-    <style>
-        /* CSS from styles.css */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        /* Add more CSS rules here as needed */
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Mind Benders</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0f;--fg:#f0ede6;--accent:#e8ff47;--muted:#2a2a35;--card-bg:#111118}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'DM Mono',monospace;overflow-x:hidden;cursor:crosshair}
+
+/* HERO */
+header{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:2rem 1rem}
+header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,#ffffff08 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,#ffffff08 60px);animation:gridShift 20s linear infinite}
+@keyframes gridShift{from{transform:translate(0,0)}to{transform:translate(60px,60px)}}
+.hero-label{font-size:.75rem;letter-spacing:.35em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;position:relative}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,12vw,8rem);font-weight:800;line-height:.95;position:relative;background:linear-gradient(135deg,#f0ede6 30%,#e8ff47 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{margin-top:1.5rem;font-size:clamp(.75rem,2vw,.9rem);color:#888;max-width:420px;line-height:1.7;position:relative;padding:0 .5rem}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.2em;color:#555;animation:bounce 2s ease-in-out infinite;white-space:nowrap}
+.scroll-hint::after{content:' ↓'}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+/* LAYOUT */
+.illusions{display:flex;flex-direction:column;gap:3.5rem;padding:4rem 1rem 6rem;max-width:960px;margin:0 auto;width:100%}
+.card{background:var(--card-bg);border:1px solid #1e1e2a;border-radius:12px;padding:clamp(1.2rem,4vw,2.5rem) clamp(1rem,4vw,2rem);display:flex;flex-direction:column;align-items:center;gap:1.4rem;position:relative;overflow:hidden;transition:border-color .3s;width:100%}
+.card:hover{border-color:var(--accent)}
+.card-title{font-family:'Syne',sans-serif;font-size:clamp(1.1rem,4vw,1.6rem);font-weight:700;align-self:flex-start}
+.card-desc{font-size:clamp(.68rem,1.8vw,.78rem);color:#666;align-self:flex-start;line-height:1.7;max-width:560px}
+.tag{position:absolute;top:1rem;right:1rem;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:.2rem .5rem;white-space:nowrap}
+
+/* 1. WHEELS */
+.wheel-container{display:flex;gap:clamp(.8rem,3vw,2rem);align-items:center;justify-content:center;flex-wrap:wrap}
+.wheel{width:clamp(70px,18vw,130px);height:clamp(70px,18vw,130px);border-radius:50%}
+.wheel-a{background:conic-gradient(#f0ede6 0deg 30deg,#111118 30deg 60deg,#f0ede6 60deg 90deg,#111118 90deg 120deg,#f0ede6 120deg 150deg,#111118 150deg 180deg,#f0ede6 180deg 210deg,#111118 210deg 240deg,#f0ede6 240deg 270deg,#111118 270deg 300deg,#f0ede6 300deg 330deg,#111118 330deg 360deg);animation:spinCW 4s linear infinite}
+.wheel-b{background:conic-gradient(#e8ff47 0deg 20deg,#111118 20deg 40deg,#e8ff47 40deg 60deg,#111118 60deg 80deg,#e8ff47 80deg 100deg,#111118 100deg 120deg,#e8ff47 120deg 140deg,#111118 140deg 160deg,#e8ff47 160deg 180deg,#111118 180deg 200deg,#e8ff47 200deg 220deg,#111118 220deg 240deg,#e8ff47 240deg 260deg,#111118 260deg 280deg,#e8ff47 280deg 300deg,#111118 300deg 320deg,#e8ff47 320deg 340deg,#111118 340deg 360deg);animation:spinCCW 3s linear infinite}
+.wheel-c{background:conic-gradient(#ff6b6b 0deg 45deg,#111118 45deg 90deg,#ff6b6b 90deg 135deg,#111118 135deg 180deg,#ff6b6b 180deg 225deg,#111118 225deg 270deg,#ff6b6b 270deg 315deg,#111118 315deg 360deg);animation:spinCW 2s linear infinite}
+@keyframes spinCW{to{transform:rotate(360deg)}}
+@keyframes spinCCW{to{transform:rotate(-360deg)}}
+
+/* 2. CAFE WALL */
+.cafe-wall{width:100%;max-width:560px;overflow:hidden;border:1px solid #2a2a35}
+.cafe-row{display:flex;height:clamp(18px,4vw,34px)}
+.cafe-row:nth-child(even){transform:translateX(clamp(18px,4vw,34px))}
+.cafe-tile{width:clamp(18px,4vw,34px);height:clamp(18px,4vw,34px);flex-shrink:0}
+.cafe-tile:nth-child(odd){background:#f0ede6}
+.cafe-tile:nth-child(even){background:#111118}
+.cafe-mortar{height:3px;background:#888;width:100%}
+
+/* 3. SCINT GRID */
+.grid-wrap{display:grid;grid-template-columns:repeat(9,clamp(22px,4vw,34px));grid-template-rows:repeat(9,clamp(22px,4vw,34px));background:#000;border:1px solid #333}
+.grid-cell{position:relative}
+.grid-cell::before{content:'';position:absolute;inset:0;border:3px solid #888}
+.grid-cell::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#f0ede6}
+
+/* 4. CUBE */
+.cube-scene{perspective:600px;width:clamp(110px,28vw,160px);height:clamp(110px,28vw,160px)}
+.cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:rotateCube 8s linear infinite}
+@keyframes rotateCube{from{transform:rotateX(-20deg) rotateY(0)}to{transform:rotateX(-20deg) rotateY(360deg)}}
+.face{position:absolute;width:100%;height:100%;border:2px solid var(--accent);background:rgba(232,255,71,.04)}
+.front{transform:translateZ(80px)}.back{transform:rotateY(180deg) translateZ(80px)}
+.left{transform:rotateY(-90deg) translateZ(80px)}.right{transform:rotateY(90deg) translateZ(80px)}
+.top{transform:rotateX(90deg) translateZ(80px)}.bottom{transform:rotateX(-90deg) translateZ(80px)}
+
+/* 5. SPIRAL */
+.spiral-wrap{position:relative;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px);display:flex;align-items:center;justify-content:center}
+.spiral-ring{position:absolute;border-radius:50%;border:3px solid transparent;animation:spinCW var(--dur) linear infinite}
+.spiral-ring:nth-child(1){width:100%;height:100%;border-color:#e8ff47 transparent transparent transparent;--dur:2.0s}
+.spiral-ring:nth-child(2){width:86%;height:86%;border-color:transparent #e8ff47 transparent transparent;--dur:1.8s}
+.spiral-ring:nth-child(3){width:72%;height:72%;border-color:transparent transparent #e8ff47 transparent;--dur:1.6s}
+.spiral-ring:nth-child(4){width:59%;height:59%;border-color:#e8ff47 transparent transparent transparent;--dur:1.4s}
+.spiral-ring:nth-child(5){width:45%;height:45%;border-color:transparent #e8ff47 transparent transparent;--dur:1.2s}
+.spiral-ring:nth-child(6){width:32%;height:32%;border-color:transparent transparent #e8ff47 transparent;--dur:1.0s}
+.spiral-ring:nth-child(7){width:18%;height:18%;border-color:#e8ff47 transparent transparent transparent;--dur:0.8s}
+.spiral-dot{width:10px;height:10px;border-radius:50%;background:var(--fg);position:absolute;z-index:2}
+.spiral-hint{font-size:.7rem;color:#555;text-align:center;max-width:280px;padding:0 .5rem}
+
+/* 6. PULSE */
+.pulse-wrap{position:relative;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px);display:flex;align-items:center;justify-content:center}
+.pulse-ring{position:absolute;border-radius:50%;border:2px solid var(--accent);animation:pulseOut 2.4s ease-out infinite;opacity:0}
+.pulse-ring:nth-child(1){animation-delay:0s}.pulse-ring:nth-child(2){animation-delay:.6s}
+.pulse-ring:nth-child(3){animation-delay:1.2s}.pulse-ring:nth-child(4){animation-delay:1.8s}
+@keyframes pulseOut{0%{width:10px;height:10px;opacity:1}100%{width:100%;height:100%;opacity:0}}
+
+/* 7. PENROSE */
+.penrose-canvas{display:block;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px)}
+
+/* 8. TUNNEL */
+.tunnel{position:relative;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px);display:flex;align-items:center;justify-content:center}
+.tunnel-ring{position:absolute;border-radius:50%;border:2px solid #e8ff47;animation:tunnelZoom 2s linear infinite;opacity:0}
+.tunnel-ring:nth-child(1){animation-delay:0s}.tunnel-ring:nth-child(2){animation-delay:.4s}
+.tunnel-ring:nth-child(3){animation-delay:.8s}.tunnel-ring:nth-child(4){animation-delay:1.2s}
+.tunnel-ring:nth-child(5){animation-delay:1.6s}
+@keyframes tunnelZoom{0%{width:8%;height:8%;opacity:.9;border-color:#e8ff47}100%{width:100%;height:100%;opacity:0;border-color:#ff6b6b}}
+
+/* 9. STAR */
+.star-wrap{width:clamp(130px,35vw,200px);height:clamp(130px,35vw,200px);display:flex;align-items:center;justify-content:center}
+.star-svg{width:100%;height:100%}
+
+/* 10. CHROMA */
+.chroma-box{width:clamp(160px,50vw,280px);height:70px;position:relative;overflow:hidden;border-radius:6px}
+.chroma-bar{position:absolute;inset:0;border-radius:6px}
+.chroma-bar:nth-child(1){background:#ff2d55;animation:chromaL 2s ease-in-out infinite alternate;mix-blend-mode:screen}
+.chroma-bar:nth-child(2){background:#00ff87;animation:chromaR 2s ease-in-out infinite alternate;mix-blend-mode:screen}
+.chroma-bar:nth-child(3){background:#2d6cff;animation:chromaU 2s ease-in-out infinite alternate;mix-blend-mode:screen}
+@keyframes chromaL{0%{transform:translateX(-6px)}100%{transform:translateX(6px)}}
+@keyframes chromaR{0%{transform:translateX(6px)}100%{transform:translateX(-6px)}}
+@keyframes chromaU{0%{transform:translateY(-4px)}100%{transform:translateY(4px)}}
+
+/* 11. MOIRE */
+.moire-wrap{position:relative;width:clamp(150px,40vw,240px);height:clamp(150px,40vw,240px);overflow:hidden;border-radius:4px}
+.moire-layer{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#e8ff47,#e8ff47 1px,transparent 1px,transparent 6px)}
+.moire-layer:nth-child(1){animation:moireR 6s linear infinite}
+.moire-layer:nth-child(2){animation:moireR2 9s linear infinite}
+@keyframes moireR{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes moireR2{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
+
+/* 12. BREATHING SQ */
+.breath-wrap{display:flex;gap:clamp(.5rem,2vw,1rem);align-items:center;justify-content:center;flex-wrap:wrap}
+.breath-sq{width:clamp(50px,12vw,90px);height:clamp(50px,12vw,90px);border:2px solid var(--accent);animation:breathe 2s ease-in-out infinite}
+.breath-sq:nth-child(2){animation-delay:.5s;border-color:#ff6b6b}
+.breath-sq:nth-child(3){animation-delay:1s;border-color:#2d6cff}
+.breath-sq:nth-child(4){animation-delay:1.5s;border-color:#00ff87}
+@keyframes breathe{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.25) rotate(45deg)}}
+
+/* 13. ANAMORPHIC */
+.amorph-wrap{display:flex;flex-direction:column;gap:4px;width:clamp(160px,50vw,260px)}
+.amorph-row{height:10px;background:linear-gradient(90deg,#e8ff47,transparent);animation:amorphS 2s ease-in-out infinite alternate}
+.amorph-row:nth-child(even){animation-direction:alternate-reverse}
+@keyframes amorphS{0%{transform:scaleX(.4) translateX(-30%)}100%{transform:scaleX(1) translateX(0%)}}
+
+/* 14. ORBITS */
+.orbit-wrap{position:relative;width:clamp(150px,38vw,200px);height:clamp(150px,38vw,200px)}
+.orbit-path{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed #333}
+.orbit-path:nth-child(1){width:100%;height:100%;animation:spinCW 8s linear infinite}
+.orbit-path:nth-child(2){width:65%;height:65%;animation:spinCCW 5s linear infinite}
+.orbit-path:nth-child(3){width:30%;height:30%;animation:spinCW 3s linear infinite}
+.orbit-dot{width:10px;height:10px;background:var(--accent);border-radius:50%;position:absolute;top:-5px;left:50%;transform:translateX(-50%)}
+.orbit-dot.red{background:#ff6b6b}.orbit-dot.blue{background:#2d6cff}
+
+/* 15. FRACTAL */
+.fractal-wrap{position:relative;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px);overflow:hidden;border-radius:4px}
+.fractal-sq{position:absolute;top:50%;left:50%;border:1px solid var(--accent);animation:fractalZ 3s linear infinite}
+.fractal-sq:nth-child(1){width:100%;height:100%;margin:-50% 0 0 -50%;animation-delay:0s}
+.fractal-sq:nth-child(2){width:75%;height:75%;margin:-37.5% 0 0 -37.5%;animation-delay:-.75s}
+.fractal-sq:nth-child(3){width:56%;height:56%;margin:-28% 0 0 -28%;animation-delay:-1.5s}
+.fractal-sq:nth-child(4){width:42%;height:42%;margin:-21% 0 0 -21%;animation-delay:-2.25s}
+.fractal-sq:nth-child(5){width:31%;height:31%;margin:-15.5% 0 0 -15.5%;animation-delay:-3s}
+@keyframes fractalZ{0%{transform:scale(.3) rotate(45deg);opacity:0}40%{opacity:1}100%{transform:scale(1.4) rotate(0deg);opacity:0}}
+
+/* 16. HELIX */
+.helix-wrap{position:relative;width:100%;max-width:clamp(200px,60vw,300px);height:clamp(70px,12vw,100px);overflow:hidden}
+.helix-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--accent);top:50%;transform:translateY(-50%)}
+
+/* 17. SHIMMER */
+.shimmer-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;width:clamp(180px,55vw,280px)}
+.shimmer-cell{aspect-ratio:1;border-radius:3px;animation:shimP 2s ease-in-out infinite}
+@keyframes shimP{0%,100%{background:#1a1a2a}50%{background:var(--accent)}}
+
+/* 18. TORUS */
+.torus-canvas{display:block;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px)}
+
+/* 19. HOLO FLIP */
+.holo-wrap{perspective:800px;width:clamp(140px,40vw,200px);height:clamp(75px,14vw,110px)}
+.holo-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:holoFlip 4s ease-in-out infinite;border-radius:12px}
+@keyframes holoFlip{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+.holo-front,.holo-back{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:clamp(1rem,3vw,1.2rem);font-weight:800;letter-spacing:.1em}
+.holo-front{background:linear-gradient(135deg,#e8ff47,#00ff87);color:#0a0a0f}
+.holo-back{background:linear-gradient(135deg,#ff6b6b,#2d6cff);color:#f0ede6;transform:rotateY(180deg)}
+
+/* 20. MANDALA */
+.mandala-canvas{display:block;width:clamp(150px,38vw,210px);height:clamp(150px,38vw,210px)}
+
+/* FOOTER */
+footer{text-align:center;padding:3rem 1rem;border-top:1px solid #1e1e2a}
+.made-by{font-family:'Syne',sans-serif;font-size:clamp(1.1rem,4vw,1.6rem);font-weight:800;color:var(--accent);letter-spacing:.08em;margin-bottom:.4rem}
+.footer-sub{font-size:.65rem;color:#333;letter-spacing:.15em;text-transform:uppercase;margin-top:.4rem}
+
+/* CURSOR */
+.trail-dot{position:fixed;border-radius:50%;background:var(--accent);pointer-events:none;transform:translate(-50%,-50%);z-index:9999;mix-blend-mode:difference}
+@media(max-width:600px){.trail-dot{display:none}}
+</style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <script>
-        // JavaScript from script.js
-        console.log('Hello from script.js');
-        // Add more JavaScript code here as needed
-    </script>
+
+<header>
+  <p class="hero-label">Visual Perception Lab</p>
+  <h1>MIND<br>BENDERS</h1>
+  <p class="hero-sub">A collection of 20 optical illusions that reveal the gap between what your eyes see and what your brain believes.</p>
+  <span class="scroll-hint">scroll</span>
+</header>
+
+<main class="illusions">
+
+  <!-- 1 -->
+  <div class="card">
+    <span class="tag">Motion</span>
+    <h2 class="card-title">Counter-Rotating Wheels</h2>
+    <p class="card-desc">Adjacent wheels spinning in opposite directions trick your brain into seeing phantom interlocking gears.</p>
+    <div class="wheel-container">
+      <div class="wheel wheel-a"></div>
+      <div class="wheel wheel-b"></div>
+      <div class="wheel wheel-c"></div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <span class="tag">Geometry</span>
+    <h2 class="card-title">Café Wall Illusion</h2>
+    <p class="card-desc">All horizontal lines are perfectly parallel — but the offset tiles make your brain tilt them.</p>
+    <div class="cafe-wall" id="cafeWall"></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <span class="tag">Contrast</span>
+    <h2 class="card-title">Scintillating Grid</h2>
+    <p class="card-desc">Phantom dark dots flicker at intersections as your gaze moves — they are never actually there.</p>
+    <div class="grid-wrap" id="scintGrid"></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <span class="tag">Depth</span>
+    <h2 class="card-title">Ambiguous Rotating Cube</h2>
+    <p class="card-desc">Without shading, your brain oscillates between two 3D interpretations. Stare until it flips.</p>
+    <div class="cube-scene">
+      <div class="cube">
+        <div class="face front"></div><div class="face back"></div>
+        <div class="face left"></div><div class="face right"></div>
+        <div class="face top"></div><div class="face bottom"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <span class="tag">Aftereffect</span>
+    <h2 class="card-title">Motion Aftereffect Spiral</h2>
+    <p class="card-desc">Stare at the centre dot for 20 s, then look at your hand — the skin appears to breathe.</p>
+    <div class="spiral-wrap">
+      <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
+      <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
+      <div class="spiral-ring"></div><div class="spiral-dot"></div>
+    </div>
+    <p class="spiral-hint">Fix gaze on the white dot for 20 s, then look at your hand</p>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <span class="tag">Expansion</span>
+    <h2 class="card-title">Expanding Pulse Rings</h2>
+    <p class="card-desc">The rings seem to emerge from infinite depth — a classic expanding focus illusion.</p>
+    <div class="pulse-wrap">
+      <div class="pulse-ring"></div><div class="pulse-ring"></div>
+      <div class="pulse-ring"></div><div class="pulse-ring"></div>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <span class="tag">Impossible</span>
+    <h2 class="card-title">Penrose Triangle</h2>
+    <p class="card-desc">An object that exists perfectly in a drawing but is physically impossible in 3D space.</p>
+    <canvas class="penrose-canvas" id="penroseCanvas"></canvas>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <span class="tag">Depth</span>
+    <h2 class="card-title">Infinite Tunnel</h2>
+    <p class="card-desc">Rings zoom toward you from apparent infinite distance. Your brain fills in a tunnel that isn't there.</p>
+    <div class="tunnel">
+      <div class="tunnel-ring"></div><div class="tunnel-ring"></div><div class="tunnel-ring"></div>
+      <div class="tunnel-ring"></div><div class="tunnel-ring"></div>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="card">
+    <span class="tag">Rotation</span>
+    <h2 class="card-title">Spinning Star Vortex</h2>
+    <p class="card-desc">Two overlapping stars rotate at different speeds, creating a vortex that pulls your gaze inward.</p>
+    <div class="star-wrap">
+      <svg class="star-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g style="animation:spinCW 4s linear infinite;transform-origin:100px 100px">
+          <polygon points="100,10 120,80 190,80 135,125 155,195 100,155 45,195 65,125 10,80 80,80" stroke="#e8ff47" stroke-width="2" fill="none"/>
+        </g>
+        <g style="animation:spinCCW 3s linear infinite;transform-origin:100px 100px">
+          <polygon points="100,30 115,75 165,75 125,102 140,148 100,122 60,148 75,102 35,75 85,75" stroke="#ff6b6b" stroke-width="1.5" fill="none"/>
+        </g>
+        <circle cx="100" cy="100" r="8" fill="#f0ede6"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <span class="tag">Colour</span>
+    <h2 class="card-title">Chromatic Drift</h2>
+    <p class="card-desc">Three colour channels drift independently — mimicking a broken display your eye can't stop chasing.</p>
+    <div class="chroma-box">
+      <div class="chroma-bar"></div><div class="chroma-bar"></div><div class="chroma-bar"></div>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="card">
+    <span class="tag">Pattern</span>
+    <h2 class="card-title">Moiré Interference</h2>
+    <p class="card-desc">Two identical grids rotating against each other produce swirling interference rings that appear to breathe.</p>
+    <div class="moire-wrap">
+      <div class="moire-layer"></div><div class="moire-layer"></div>
+    </div>
+  </div>
+
+  <!-- 12 -->
+  <div class="card">
+    <span class="tag">Size</span>
+    <h2 class="card-title">Breathing Squares</h2>
+    <p class="card-desc">Four squares pulse and rotate with staggered timing — watch the corners appear to spin even though only the size changes.</p>
+    <div class="breath-wrap">
+      <div class="breath-sq"></div><div class="breath-sq"></div>
+      <div class="breath-sq"></div><div class="breath-sq"></div>
+    </div>
+  </div>
+
+  <!-- 13 -->
+  <div class="card">
+    <span class="tag">Motion</span>
+    <h2 class="card-title">Anamorphic Stretch</h2>
+    <p class="card-desc">Alternating bars slide in opposite directions — the rows seem to exist at different depths despite being flat.</p>
+    <div class="amorph-wrap" id="amorphWrap"></div>
+  </div>
+
+  <!-- 14 -->
+  <div class="card">
+    <span class="tag">Orbit</span>
+    <h2 class="card-title">Nested Orbits</h2>
+    <p class="card-desc">Three concentric orbits spin in alternating directions — the paths appear to flex and wobble.</p>
+    <div class="orbit-wrap">
+      <div class="orbit-path"><div class="orbit-dot"></div></div>
+      <div class="orbit-path"><div class="orbit-dot red"></div></div>
+      <div class="orbit-path"><div class="orbit-dot blue"></div></div>
+    </div>
+  </div>
+
+  <!-- 15 -->
+  <div class="card">
+    <span class="tag">Zoom</span>
+    <h2 class="card-title">Fractal Zoom Vortex</h2>
+    <p class="card-desc">Squares emerge from the centre, expand, and rotate outward endlessly — your brain perceives infinite depth.</p>
+    <div class="fractal-wrap">
+      <div class="fractal-sq"></div><div class="fractal-sq"></div><div class="fractal-sq"></div>
+      <div class="fractal-sq"></div><div class="fractal-sq"></div>
+    </div>
+  </div>
+
+  <!-- 16 -->
+  <div class="card">
+    <span class="tag">Wave</span>
+    <h2 class="card-title">Hypnotic Helix</h2>
+    <p class="card-desc">A flat row of dots oscillating in a sine wave with staggered phases — appears to twist in 3D.</p>
+    <div class="helix-wrap" id="helixWrap"></div>
+  </div>
+
+  <!-- 17 -->
+  <div class="card">
+    <span class="tag">Flash</span>
+    <h2 class="card-title">Shimmer Grid</h2>
+    <p class="card-desc">Each cell fires at a random delay — the grid ripples with a travelling wave that has no fixed direction.</p>
+    <div class="shimmer-grid" id="shimmerGrid"></div>
+  </div>
+
+  <!-- 18 -->
+  <div class="card">
+    <span class="tag">3D</span>
+    <h2 class="card-title">Spinning Torus</h2>
+    <p class="card-desc">A real-time 3D torus — its surface appears to flip inside-out as it rotates without shading cues.</p>
+    <canvas class="torus-canvas" id="torusCanvas"></canvas>
+  </div>
+
+  <!-- 19 -->
+  <div class="card">
+    <span class="tag">Flip</span>
+    <h2 class="card-title">Holographic Card Flip</h2>
+    <p class="card-desc">A card flips in 3D space — your brain insists it folds rather than rotates.</p>
+    <div class="holo-wrap">
+      <div class="holo-card">
+        <div class="holo-front">FRONT</div>
+        <div class="holo-back">BACK</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 20 -->
+  <div class="card">
+    <span class="tag">Mandala</span>
+    <h2 class="card-title">Psychedelic Mandala</h2>
+    <p class="card-desc">Rotating layered petals — stare at the centre and the outer rings seem to counter-rotate on their own.</p>
+    <canvas class="mandala-canvas" id="mandalaCanvas"></canvas>
+  </div>
+
+</main>
+
+<footer>
+  <p class="made-by">— Made By Ridhaan —</p>
+  <p class="footer-sub">Visual Perception Lab &nbsp;·&nbsp; 2026</p>
+</footer>
+
+<script>
+/* CAFÉ WALL */
+const wall=document.getElementById('cafeWall');
+for(let r=0;r<8;r++){
+  if(r>0){const m=document.createElement('div');m.className='cafe-mortar';wall.appendChild(m)}
+  const row=document.createElement('div');row.className='cafe-row';
+  for(let c=0;c<17;c++){const t=document.createElement('div');t.className='cafe-tile';row.appendChild(t)}
+  wall.appendChild(row);
+}
+
+/* SCINTILLATING GRID */
+const sg=document.getElementById('scintGrid');
+for(let i=0;i<81;i++){const c=document.createElement('div');c.className='grid-cell';sg.appendChild(c)}
+
+/* ANAMORPHIC ROWS */
+const aw=document.getElementById('amorphWrap');
+for(let i=0;i<14;i++){const r=document.createElement('div');r.className='amorph-row';aw.appendChild(r)}
+
+/* SHIMMER GRID */
+const shg=document.getElementById('shimmerGrid');
+for(let i=0;i<64;i++){
+  const c=document.createElement('div');c.className='shimmer-cell';
+  c.style.animationDelay=(Math.random()*2)+'s';
+  c.style.animationDuration=(.8+Math.random()*1.6)+'s';
+  shg.appendChild(c);
+}
+
+/* PENROSE TRIANGLE */
+(function(){
+  const cv=document.getElementById('penroseCanvas');
+  const S=cv.offsetWidth||200;
+  cv.width=S;cv.height=S;
+  const ctx=cv.getContext('2d');
+  const cx=S/2,cy=S/2,R=S*.38;
+  const a0=-Math.PI/2;
+  const pts=[
+    [cx+R*Math.cos(a0),cy+R*Math.sin(a0)],
+    [cx+R*Math.cos(a0+2*Math.PI/3),cy+R*Math.sin(a0+2*Math.PI/3)],
+    [cx+R*Math.cos(a0+4*Math.PI/3),cy+R*Math.sin(a0+4*Math.PI/3)]
+  ];
+  const W=S*.085;
+  const cols=['#e8ff47','#ff6b6b','#2d6cff'];
+  function drawBeam(p1,p2,col){
+    const dx=p2[0]-p1[0],dy=p2[1]-p1[1],len=Math.sqrt(dx*dx+dy*dy);
+    const nx=-dy/len*W,ny=dx/len*W;
+    ctx.beginPath();
+    ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);
+    ctx.lineTo(p2[0]+nx,p2[1]+ny);ctx.lineTo(p1[0]+nx,p1[1]+ny);
+    ctx.closePath();ctx.fillStyle=col;ctx.fill();
+  }
+  let angle=0;
+  function draw(){
+    ctx.clearRect(0,0,S,S);
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);ctx.translate(-cx,-cy);
+    for(let i=0;i<3;i++) drawBeam(pts[i],pts[(i+1)%3],cols[i]);
+    const cW=W*1.1;
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.arc(pts[i][0]+cW/3,pts[i][1]+cW/3,cW*.7,0,Math.PI*2);
+      ctx.fillStyle=cols[(i+2)%3];ctx.fill();
+    }
+    ctx.restore();angle+=.006;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* HELIX */
+(function(){
+  const wrap=document.getElementById('helixWrap');
+  const N=18;const dots=[];
+  const W=wrap.offsetWidth||280;
+  for(let i=0;i<N;i++){
+    const d=document.createElement('div');d.className='helix-dot';
+    d.style.left=(i/(N-1)*(W-12))+'px';
+    wrap.appendChild(d);dots.push(d);
+  }
+  let t=0;
+  function anim(){
+    t+=.04;
+    const H=wrap.offsetHeight||90;
+    dots.forEach((d,i)=>{
+      const y=H/2+Math.sin(t+i*.5)*H*.38;
+      d.style.top=y+'px';
+      const sc=.5+.5*Math.sin(t+i*.5+Math.PI/2);
+      d.style.background=`hsl(${60+sc*200},100%,${50+sc*20}%)`;
+      d.style.transform=`translateY(-50%) scale(${.6+sc*.8})`;
+    });
+    requestAnimationFrame(anim);
+  }
+  anim();
+})();
+
+/* TORUS */
+(function(){
+  const cv=document.getElementById('torusCanvas');
+  const S=cv.offsetWidth||200;cv.width=S;cv.height=S;
+  const ctx=cv.getContext('2d');
+  let t=0;const Rb=S*.3,rb=S*.11;
+  function draw(){
+    ctx.clearRect(0,0,S,S);
+    const steps=55;
+    for(let i=0;i<steps;i++){
+      const a=2*Math.PI*i/steps;
+      for(let j=0;j<steps;j++){
+        const b=2*Math.PI*j/steps+t;
+        const x=(Rb+rb*Math.cos(b))*Math.cos(a+t*.7);
+        const y=(Rb+rb*Math.cos(b))*Math.sin(a+t*.7);
+        const z=rb*Math.sin(b);
+        const px=x+S/2,py=y*.5+z*.5+S/2;
+        const br=((Math.sin(b+t)+1)/2*180+60)|0;
+        const alpha=.3+.4*((Math.sin(a+t)+1)/2);
+        ctx.beginPath();ctx.arc(px,py,1.2,0,Math.PI*2);
+        ctx.fillStyle=`hsla(${br},100%,60%,${alpha})`;ctx.fill();
+      }
+    }
+    t+=.012;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* MANDALA */
+(function(){
+  const cv=document.getElementById('mandalaCanvas');
+  const S=cv.offsetWidth||200;cv.width=S;cv.height=S;
+  const ctx=cv.getContext('2d');
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,S,S);
+    const cx=S/2,cy=S/2;
+    const layers=5,petals=8;
+    for(let l=0;l<layers;l++){
+      const rad=(l+1)*(S*.08);
+      const dir=l%2===0?1:-1;
+      const hue=(l*40+t*30)%360;
+      for(let p=0;p<petals;p++){
+        const ang=2*Math.PI*p/petals+dir*t*(l+1)*.04;
+        const x=cx+rad*Math.cos(ang),y=cy+rad*Math.sin(ang);
+        ctx.beginPath();ctx.ellipse(x,y,rad*.28,rad*.13,ang,0,Math.PI*2);
+        ctx.strokeStyle=`hsla(${(hue+p*20)%360},100%,65%,.7)`;
+        ctx.lineWidth=1.2;ctx.stroke();
+      }
+    }
+    ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='#f0ede6';ctx.fill();
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* CURSOR TRAIL */
+const TRAIL=12;const trailDots=[];
+for(let i=0;i<TRAIL;i++){
+  const d=document.createElement('div');d.className='trail-dot';
+  d.style.opacity=(1-i/TRAIL).toFixed(2);
+  const sz=Math.max(2,10-i*.6);
+  d.style.width=d.style.height=sz+'px';
+  document.body.appendChild(d);trailDots.push({el:d,x:-99,y:-99});
+}
+let mx=-99,my=-99;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  let px=mx,py=my;
+  trailDots.forEach(dot=>{
+    dot.el.style.left=px+'px';dot.el.style.top=py+'px';
+    const nx=px+(dot.x-px)*.35,ny=py+(dot.y-py)*.35;
+    dot.x=px;dot.y=py;px=nx;py=ny;
+  });
+  requestAnimationFrame(loop);
+})();
+</script>
 </body>
 </html>
