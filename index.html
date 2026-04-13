@@ -24,6 +24,9 @@
       font-family: 'DM Mono', monospace;
       overflow-x: hidden;
       cursor: crosshair;
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.5;
     }
 
     /* ── HERO ── */
@@ -73,6 +76,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      margin: 0;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin: 0;
     }
 
     .hero-sub {
@@ -378,6 +386,16 @@
       transition: opacity .4s;
     }
 
+    .cursor-trail {
+      width: 10px;
+      height: 10px;
+      background: rgba(0, 255, 0, 0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      transition: transform 0.1s ease;
+    }
+
     /* ════════════════════════════
        FOOTER
     ════════════════════════════ */
@@ -388,11 +406,26 @@
       color: #333;
       letter-spacing: .1em;
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+    }
+
+    /* Accessibility Enhancements */
+    [role="button"] {
+      cursor: pointer;
+      outline: none;
+    }
+
+    [tabindex]:focus {
+      outline: 2px solid var(--accent);
+    }
   </style>
 </head>
 <body>
-
-<!-- Cursor trails injected by JS -->
 
 <header>
   <p class="hero-label">Visual Perception Lab</p>
@@ -454,7 +487,7 @@
   <div class="card">
     <span class="tag">Aftereffect</span>
     <h2 class="card-title">Motion Aftereffect</h2>
-    <p class="card-desc">Stare at the centre dot for 20–30 seconds, then look at the back of your hand. The skin will appear to breathe — a classic motion aftereffect caused by fatigued direction-sensitive neurons.</p>
+    <p class="card-desc">Stare at the centre dot for 20–30 seconds, then look at the back of your hand. The skin will appear to breathe — a classic motion aftereffect caused by fatigued directional mechanisms in your visual cortex.</p>
     <div class="spiral-wrap">
       <div class="spiral-ring"></div>
       <div class="spiral-ring"></div>
@@ -526,6 +559,27 @@
     });
     requestAnimationFrame(animate);
   })();
+
+  /* ── DYNAMIC ELEMENT CREATION ── */
+  function createDynamicElement(tag, properties) {
+    const element = document.createElement(tag);
+    for (const key in properties) {
+      element[key] = properties[key];
+    }
+    document.body.appendChild(element);
+    return element;
+  }
+
+  /* ── THROTTLED MOUSEMOVE ── */
+  let lastExecution = 0;
+  const throttleMouseMove = (event) => {
+    const now = Date.now();
+    if (now - lastExecution >= 50) {
+      lastExecution = now;
+      document.dispatchEvent(new Event('mousemove-throttled', { bubbles: true }));
+    }
+  };
+  document.addEventListener('mousemove', throttleMouseMove);
 </script>
 </body>
 </html>
